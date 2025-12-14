@@ -1,8 +1,9 @@
 import "./App.css";
-import { Box, Container, Typography, Alert, Snackbar, CircularProgress, Grid, createTheme, ThemeProvider } from "@mui/material";
-import Slide from "@mui/material/Slide";
+import { Box, Container, Typography, CircularProgress, Grid, createTheme, ThemeProvider } from "@mui/material";
 import { useUserManager } from "./hooks/useUserManager";
 import UserCard from "./components/UserCard";
+import ActionBar from "./components/ActionBar";
+import { useSnackbar } from "./hooks/useSnackbar";
 
 const customTheme = createTheme({
     palette: {
@@ -13,34 +14,23 @@ const customTheme = createTheme({
     },
 });
 
-const SlideTransition = (props) => {
-    return <Slide {...props} direction="left" />;
-};
-
 function App() {
-    const { users, loading, error, clearError, deleteUser, } = useUserManager();
+    const { showSnackbar, SnackbarComponent } = useSnackbar();
+    const { users, loading, addUser, deleteUser, refreshUsers, searchQuery, onSearch } = useUserManager({ showSnackbar });
 
     return (
         <ThemeProvider theme={customTheme}>
             <Container maxWidth="lg">
-                {error && (
-                    <Snackbar
-                        open={!!error}
-                        autoHideDuration={3000}
-                        onClose={() => clearError()}
-                        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                        slots={{ transition: SlideTransition }}
-                    >
-                        <Alert onClose={() => clearError()} severity="error" variant="filled" sx={{ width: "100%" }}>
-                            {error}
-                        </Alert>
-                    </Snackbar>
-                )}
+                <SnackbarComponent />
+
                 <Box mb={4}>
                     <Typography variant="h4" fontWeight="bold" color="initial">
                         User Management
                     </Typography>
                 </Box>
+
+                <ActionBar searchQuery={searchQuery} onSearch={onSearch} onRefresh={refreshUsers} onAdd={addUser} loading={loading}></ActionBar>
+
                 {loading ? (
                     <Box display="flex" justifyContent="center" py={10}>
                         <CircularProgress />

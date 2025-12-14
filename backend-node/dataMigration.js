@@ -1,0 +1,35 @@
+require("dotenv").config();
+
+const db = require("./config/db");
+
+async function migrateData() {
+    try {
+        const resp = await fetch("https://dummyjson.com/users");
+        const result = await resp.json();
+        let users = result.users || [];
+
+        users = users.slice(0, 20); // limiting number of users as I am using a free MySQL instance.
+
+        const allProms = users.map((user, i) => {
+            const queryInsert = {
+                sql: `
+            INSERT IGNORE INTO users 
+            (id, firstName, lastName, age, gender, email, username, image) 
+            VALUES 
+            (${user.id}, '${user.firstName}', '${user.lastName}', ${user.age}, '${user.gender}', '${user.email}', '${user.username}', '${user.image}')
+            `,
+                timeout: 5000,
+            };
+            console.log("Insertion done for user index: ", i);
+            return db.query(queryInsert);
+        });
+        await Promise.all(allProms);
+        console.log("Data Migration done");
+        process.exit(0);
+    } catch (err) {
+        console.error("Error occurred: ", err);
+        process.exit(1);
+    }
+}
+
+migrateData();

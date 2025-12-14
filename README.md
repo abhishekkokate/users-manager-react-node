@@ -68,6 +68,23 @@ A Node.js/MySQL API demonstrating database schema design, routing, and environme
     npm install
     ```
 
+1. **Add env variables**
+
+    Add a `.env` file with below details
+
+    ```
+    PORT=8080
+    DB_URL=<your-mysql-connection-url>
+    ```
+
+1. **Migrate the Data to MySQL**
+
+    This will also give u a DB connection check
+
+    ```
+    node dataMigration.js
+    ```
+
 1. **Run the project**
     ```bash
     node index.js

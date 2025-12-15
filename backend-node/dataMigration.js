@@ -4,11 +4,9 @@ const db = require("./config/db");
 
 async function migrateData() {
     try {
-        const resp = await fetch("https://dummyjson.com/users");
+        const resp = await fetch("https://dummyjson.com/users?limit=20");
         const result = await resp.json();
         let users = result.users || [];
-
-        users = users.slice(0, 20); // limiting number of users as I am using a free MySQL instance.
 
         const queryCreateTable = `
         CREATE TABLE IF NOT EXISTS users (

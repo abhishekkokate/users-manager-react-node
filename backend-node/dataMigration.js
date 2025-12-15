@@ -10,10 +10,27 @@ async function migrateData() {
 
         users = users.slice(0, 20); // limiting number of users as I am using a free MySQL instance.
 
+        const queryCreateTable = `
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            firstName VARCHAR(100) NOT NULL,
+            lastName VARCHAR(100) NOT NULL,
+            age INT,
+            gender VARCHAR(100),
+            email VARCHAR(255) NOT NULL UNIQUE,
+            username VARCHAR(100),
+            image VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        );
+        `;
+
+        await db.query(queryCreateTable);
+
         const allProms = users.map((user, i) => {
             const queryInsert = {
                 sql: `
-            INSERT IGNORE INTO users 
+            INSERT IGNORE INTO users
             (id, firstName, lastName, age, gender, email, username, image) 
             VALUES 
             (${user.id}, '${user.firstName}', '${user.lastName}', ${user.age}, '${user.gender}', '${user.email}', '${user.username}', '${user.image}')
